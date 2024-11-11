@@ -4,9 +4,9 @@ import os
 from datetime import datetime
 
 class Base(ABC):
-    def __init__(self, root_path, file_name, is_debug=False):
+    def __init__(self, root_path, file_name, is_debug=False, debug_data=None):
         self.data_path = os.path.join(root_path, file_name)
-        self.load(is_debug)
+        self.load(is_debug, debug_data)
 
     def get_timestamp(self):
         return datetime.utcnow().isoformat() + "Z"
@@ -22,23 +22,34 @@ class Base(ABC):
         with open(self.data_path, "w") as f:
             json.dump(self.data, f)
 
-    @abstractmethod
-    def get_all_items(self):
-        pass
+    def get_all(self):
+        return self.data
 
-    @abstractmethod
-    def get_item(self, item_id):
-        pass
+    def get_one(self, item_id):
+        for item in self.data:
+            if item["id"] == item_id:
+                return item
+        return None
 
-    @abstractmethod
-    def add_item(self, item_data):
-        pass
+    def add(self, item_data):
+        item_data["created_at"] = self.get_timestamp()
+        item_data["updated_at"] = self.get_timestamp()
+        self.data.append(item_data)
+        self.save()
 
-    @abstractmethod
-    def update_item(self, item_id, item_data):
-        pass
+    def update(self, item_id, item_data):
+        item_data["updated_at"] = self.get_timestamp()
+        for i in range(len(self.data)):
+            if self.data[i]["id"] == item_id:
+                self.data[i] = item_data
+                self.save()
+                return
+        raise ValueError(f"Item with id {item_id} not found")
 
-    @abstractmethod
-    def delete_item(self, item_id):
-        pass
-
+    def delete(self, item_id):
+        for item in self.data:
+            if item["id"] == item_id:
+                self.data.remove(item)
+                self.save()
+                return
+        raise ValueError(f"Item with id {item_id} not found")

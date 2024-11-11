@@ -17,6 +17,7 @@ from mainManagement import OrdersManagement
 from mainManagement import ClientsManagement
 from mainManagement import ShipmentsManagement
 
+
 class ApiRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
@@ -60,6 +61,8 @@ class ApiRequestHandler(http.server.BaseHTTPRequestHandler):
             manager = ItemsManagement(self)
         elif path[0] == "itemtypes":
             manager = ItemTypesManagement(self)
+        elif path[0] == "locations":
+            manager = LocationManagement(self)
         elif path[0] == "orders":
             manager = OrdersManagement(self)
         elif path[0] == "shipments":
