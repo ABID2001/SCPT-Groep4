@@ -1,0 +1,23 @@
+name: SoftwareTools
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - psycopg2
+  - pip
+  - bzip2
+  - ca-certificates
+  - expat
+  - krb5
+  - libcxx
+  - libedit
+  - libffi
+  - libpq
+  - ncurses
+  - openssl
+  - readline
+  - sqlite
+  - tk
+  - wheel
+  - xz
+  - zlib
