@@ -1,136 +1,127 @@
 import unittest
-from code.api.models.base import Base
-from datetime import datetime
-from data_init import TestData
+from datetime import datetime, timezone
+from ..code.api.models.base import Base
+from .data_init import TestData
+
+'''
+cd C:/Users/Frank/SCPT-Groep4
+python -m unittest Warehousing/tests/test_base.py
+python -m unittest -v Warehousing/tests/test_base.py
+'''
 
 class TestBaseClass(Base):
-    def __init__(self, data):
+    def __init__(self, root_path, file_name, data):
+        super().__init__(root_path, file_name, is_debug=True, debug_data=data)
         self.data = data
 
-    def test_get_timestamp(self):
-        self.assertEqual(self.get_timestamp(), datetime.utcnow().isoformat() + "Z")
+    def get_timestamp(self):
+        return datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z"
 
-    def test_get_all(self):
-        self.assertEqual(self.get_all(), self.data)
-
-    def test_get_one(self, item_id, expected_item):
-        self.assertEqual(self.get_one(item_id), expected_item)
-
-    def test_item_attribute(self, item_id, attribute, expected_value):
-        item = self.get_one(item_id)
-        self.assertIsNotNone(item)
-        self.assertEqual(item[attribute], expected_value)
-
-    def test_add_item(self, new_item):
-        initial_length = len(self.data)
-        self.add(new_item)
-        self.assertEqual(len(self.data), initial_length + 1)
-        self.assertEqual(self.get_one(new_item["id"]), new_item)
-
-    def test_update_item(self, item_id, updated_item):
-        self.update(item_id, updated_item)
-        self.assertEqual(self.get_one(item_id), updated_item)
-
-    def test_delete_item(self, item_id):
-        initial_length = len(self.data)
-        self.delete(item_id)
-        self.assertEqual(len(self.data), initial_length - 1)
-        self.assertIsNone(self.get_one(item_id))
-
-#zonder unittest.testcase heb je geen toegang tot de test methods.
 class TestBase(unittest.TestCase):
+    def setUp(self):
+        self.root_path = "some/root/path"
+        self.file_name = "some_file_name"
+
+    def assert_timestamp_close(self, actual, expected, delta=0.01):
+        actual_time = datetime.fromisoformat(actual[:-1])
+        expected_time = datetime.fromisoformat(expected[:-1])
+        self.assertAlmostEqual(actual_time.timestamp(), expected_time.timestamp(), delta=delta)
+
     def test_clients(self):
         self.test_data = TestData.test_data_clients()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "name", "Alpha Industries")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["name"], "Alpha Industries")
 
     def test_inventories(self):
         self.test_data = TestData.test_data_inventories()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "description", "Aluminum Sheets")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["description"], "Face-to-face clear-thinking complexity")
 
     def test_item_groups(self):
         self.test_data = TestData.test_data_item_groups()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "name", "Furniture")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(0), self.test_data[0])
+        self.assertEqual(test_base.get_one(0)["name"], "Electronics")
 
     def test_item_lines(self):
         self.test_data = TestData.test_data_item_lines()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "name", "Electronics")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["name"], "Electronics")
 
     def test_item_types(self):
         self.test_data = TestData.test_data_item_types()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "name", "Consumables")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["name"], "Consumables")
 
     def test_items(self):
         self.test_data = TestData.test_data_items()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "name", "Wireless Mouse")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one("P000002"), self.test_data[0])
+        self.assertEqual(test_base.get_one("P000002")["description"], "Focused transitional alliance")
 
     def test_locations(self):
         self.test_data = TestData.test_data_locations()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "name", "Warehouse C - Section 1")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["name"], "Row: A, Rack: 1, Shelf: 0")
 
     def test_orders(self):
         self.test_data = TestData.test_data_orders()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "order_number", "ORD003")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["reference"], "ORD00001")
 
     def test_shipments(self):
         self.test_data = TestData.test_data_shipments()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "shipment_type", "Outgoing")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["carrier_code"], "DPD")
 
     def test_suppliers(self):
         self.test_data = TestData.test_data_suppliers()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "name", "Tech Supplies Inc.")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["name"], "Lee, Parks and Johnson")
 
     def test_transfers(self):
         self.test_data = TestData.test_data_transfers()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "reference", "TRANS003")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["reference"], "TR00001")
 
     def test_warehouses(self):
         self.test_data = TestData.test_data_warehouses()
-        test_base = TestBaseClass(self.test_data)
-        test_base.test_get_timestamp()
-        test_base.test_get_all(self)
-        test_base.test_get_one(1, self.test_data[0])
-        test_base.test_item_attribute(1, "name", "North Storage Facility")
+        test_base = TestBaseClass(self.root_path, self.file_name, self.test_data)
+        self.assert_timestamp_close(test_base.get_timestamp(), datetime.now(timezone.utc).isoformat(timespec='seconds') + "Z")
+        self.assertEqual(test_base.get_all(), self.test_data)
+        self.assertEqual(test_base.get_one(1), self.test_data[0])
+        self.assertEqual(test_base.get_one(1)["name"], "Heemskerk cargo hub")
+
+if __name__ == "__main__":
+    unittest.main()

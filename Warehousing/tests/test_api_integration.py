@@ -1,6 +1,10 @@
 import requests
+
 import unittest
 
+'''
+python -m unittest -v test_api_integration.py
+'''
 class TestWarehouseAPI(unittest.TestCase):
     BASE_URL = "http://localhost:8000/api/v1/warehouses"
 

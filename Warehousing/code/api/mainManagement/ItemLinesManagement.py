@@ -1,6 +1,6 @@
 import json
-from providers import data_provider
-from mainManagement.Management import Management
+from ..providers import data_provider
+from .Management import Management
 
 class ItemLinesManagement(Management):
     def __init__(self, handler):
