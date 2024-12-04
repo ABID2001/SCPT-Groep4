@@ -24,7 +24,7 @@ jobs:
         - name: Run the program
           run: |
             python api/main.py
-
+  
     lint:
         runs-on: ubuntu-latest
         steps:
@@ -81,8 +81,9 @@ jobs:
               run: docker build -t warehousing .
 
             - name: Push Docker image to registry
-              run: docker push your-docker-registry/warehousing:latest  
+              run: docker push warehousing:latest
             
             - name: Deploy to Server
               run: 
 
+                
