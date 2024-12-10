@@ -42,29 +42,29 @@ jobs:
               run: python -m unittest Warehousing.tests.test_management
 
 
-    deploy:
-        name: Deploy Application
-        runs-on: ubuntu-latest
-        needs: test
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    # deploy:
+    #     name: Deploy Application
+    #     runs-on: ubuntu-latest
+    #     needs: test
+    #     steps:
+    #         - name: Checkout code
+    #           uses: actions/checkout@v3
 
-            - name: Set up Python
-              uses: actions/setup-python@v3
-              with:
-                python-version: '3.13'
+    #         - name: Set up Python
+    #           uses: actions/setup-python@v3
+    #           with:
+    #             python-version: '3.13'
 
-            - name: Install dependencies
-              run: pip install -r requirements.txt
+    #         - name: Install dependencies
+    #           run: pip install -r requirements.txt
 
-            - name: Build Docker image
-              run: docker build -t warehousing .
+    #         - name: Build Docker image
+    #           run: docker build -t warehousing .
 
-            - name: Push Docker image to registry
-              run: docker push warehousing:latest
+    #         - name: Push Docker image to registry
+    #           run: docker push warehousing:latest
             
-            - name: Deploy to Server
-              run: 
+    #         - name: Deploy to Server
+    #           run: 
 
                 
