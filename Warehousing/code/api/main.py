@@ -1,37 +1,19 @@
 import socketserver
-import http.server
-import json
+from Warehousing.code.mainManagement.ClientsManagement import ClientsManagement
+from Warehousing.code.mainManagement.InventoriesManagement import InventoriesManagement
+from Warehousing.code.mainManagement.ItemGroupsManagement import ItemGroupsManagement
+from Warehousing.code.mainManagement.ItemLinesManagement import ItemLinesManagement
+from Warehousing.code.mainManagement.ItemsManagement import ItemsManagement
+from Warehousing.code.mainManagement.ItemTypesManagement import ItemTypesManagement
+from Warehousing.code.mainManagement.LocationManagement import LocationManagement
+from Warehousing.code.mainManagement.OrdersManagement import OrdersManagement
+from Warehousing.code.mainManagement.ShipmentsManagement import ShipmentsManagement
+from Warehousing.code.mainManagement.SuppliersManagement import SuppliersManagement
+from Warehousing.code.mainManagement.TransfersManagement import TransfersManagement
+from Warehousing.code.mainManagement.WarehouseManagement import WarehouseManagement
+from Warehousing.code.api.providers import auth_provider
 
-from providers import auth_provider
-from providers import data_provider
-from mainManagement import WarehouseManagement
-from mainManagement import LocationManagement
-from mainManagement import TransfersManagement
-from mainManagement import ItemsManagement
-from mainManagement import ItemLinesManagement
-from mainManagement import ItemGroupsManagement
-from mainManagement import ItemTypesManagement
-from mainManagement import InventoriesManagement
-from mainManagement import SuppliersManagement
-from mainManagement import OrdersManagement
-from mainManagement import ClientsManagement
-from mainManagement import ShipmentsManagement
-
-
-class ApiRequestHandler(http.server.BaseHTTPRequestHandler):
-
-    def do_GET(self):
-        self.handle_request("get")
-
-    def do_POST(self):
-        self.handle_request("post")
-
-    def do_PUT(self):
-        self.handle_request("put")
-
-    def do_DELETE(self):
-        self.handle_request("delete")
-
+class ApiRequestHandler(socketserver.BaseRequestHandler):
     def handle_request(self, method):
         api_key = self.headers.get("API_KEY")
         user = auth_provider.get_user(api_key)
@@ -86,12 +68,9 @@ class ApiRequestHandler(http.server.BaseHTTPRequestHandler):
             manager.handle_put_request(path[1:])
         elif method == "delete":
             manager.handle_delete_request(path[1:])
-        else:
-            self.send_response(405)
-            self.end_headers()
 
 if __name__ == "__main__":
-    PORT = 8000
+    PORT = 3000
     server = socketserver.TCPServer(("", PORT), ApiRequestHandler)
     print(f"Serving on port {PORT}")
     server.serve_forever()
