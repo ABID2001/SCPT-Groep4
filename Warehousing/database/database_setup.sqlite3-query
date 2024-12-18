@@ -1,0 +1,199 @@
+-- database: ./database.db
+
+CREATE TABLE warehouses (
+    id INT PRIMARY KEY,
+    code VARCHAR(50),
+    name VARCHAR(255),
+    address VARCHAR(255),
+    zip VARCHAR(20),
+    city VARCHAR(100),
+    province VARCHAR(100),
+    country VARCHAR(50),
+    contact_name VARCHAR(255),
+    contact_phone VARCHAR(50),
+    contact_email VARCHAR(255),
+    created_at DATETIME,
+    updated_at DATETIME
+);
+
+CREATE TABLE transfers (
+    id INT PRIMARY KEY,
+    reference VARCHAR(50),
+    transfer_from INT,
+    transfer_to INT,
+    transfer_status VARCHAR(50),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+CREATE TABLE transfer_items (
+    transfer_id INT,
+    item_id VARCHAR(50),
+    amount INT,
+    FOREIGN KEY (transfer_id) REFERENCES transfers(id)
+);
+
+CREATE TABLE suppliers (
+    id INT PRIMARY KEY,
+    code VARCHAR(50),
+    name VARCHAR(255),
+    address VARCHAR(255),
+    address_extra VARCHAR(255),
+    city VARCHAR(100),
+    zip_code VARCHAR(20),
+    province VARCHAR(100),
+    country VARCHAR(100),
+    contact_name VARCHAR(255),
+    phonenumber VARCHAR(50),
+    reference VARCHAR(50),
+    created_at DATETIME,
+    updated_at DATETIME
+);
+
+CREATE TABLE shipments (
+    id INT PRIMARY KEY,
+    order_id INT,
+    source_id INT,
+    order_date DATE,
+    request_date DATE,
+    shipment_date DATE,
+    shipment_type CHAR(1),
+    shipment_status VARCHAR(50),
+    notes TEXT,
+    carrier_code VARCHAR(50),
+    carrier_description VARCHAR(255),
+    service_code VARCHAR(50),
+    payment_type VARCHAR(50),
+    transfer_mode VARCHAR(50),
+    total_package_count INT,
+    total_package_weight DECIMAL(10, 2),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+CREATE TABLE shipment_items (
+    shipment_id INT,
+    item_id VARCHAR(50),
+    amount INT,
+    FOREIGN KEY (shipment_id) REFERENCES shipments(id)
+);
+
+CREATE TABLE orders (
+    id INT PRIMARY KEY,
+    source_id INT,
+    order_date TIMESTAMP,
+    request_date TIMESTAMP,
+    reference VARCHAR(50),
+    reference_extra TEXT,
+    order_status VARCHAR(50),
+    notes TEXT,
+    shipping_notes TEXT,
+    picking_notes TEXT,
+    warehouse_id INT,
+    ship_to VARCHAR(255),
+    bill_to VARCHAR(255),
+    shipment_id INT,
+    total_amount DECIMAL(10, 2),
+    total_discount DECIMAL(10, 2),
+    total_tax DECIMAL(10, 2),
+    total_surcharge DECIMAL(10, 2),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+CREATE TABLE order_items (
+    order_id INT,
+    item_id VARCHAR(50),
+    amount INT,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+CREATE TABLE locations (
+    id INT PRIMARY KEY,
+    warehouse_id INT,
+    code VARCHAR(50),
+    name VARCHAR(255),
+    created_at DATETIME,
+    updated_at DATETIME,
+    FOREIGN KEY (warehouse_id) REFERENCES warehouses(id)
+);
+
+CREATE TABLE items (
+    uid VARCHAR(50) PRIMARY KEY,
+    code VARCHAR(50),
+    description TEXT,
+    short_description VARCHAR(255),
+    upc_code VARCHAR(50),
+    model_number VARCHAR(50),
+    commodity_code VARCHAR(50),
+    item_line INT,
+    item_group INT,
+    item_type INT,
+    unit_purchase_quantity INT,
+    unit_order_quantity INT,
+    pack_order_quantity INT,
+    supplier_id INT,
+    supplier_code VARCHAR(50),
+    supplier_part_number VARCHAR(50),
+    created_at DATETIME,
+    updated_at DATETIME
+);
+
+CREATE TABLE item_types (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    description TEXT,
+    created_at DATETIME,
+    updated_at DATETIME
+);
+
+CREATE TABLE item_lines (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    description TEXT,
+    created_at DATETIME,
+    updated_at DATETIME
+);
+
+CREATE TABLE item_groups (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    description TEXT,
+    created_at DATETIME,
+    updated_at DATETIME
+);
+
+CREATE TABLE inventories (
+    id INT PRIMARY KEY,
+    item_id VARCHAR(50),
+    description TEXT,
+    item_reference VARCHAR(50),
+    total_on_hand INT,
+    total_expected INT,
+    total_ordered INT,
+    total_allocated INT,
+    total_available INT,
+    created_at DATETIME,
+    updated_at DATETIME
+);
+
+CREATE TABLE inventory_locations (
+    inventory_id INT,
+    location_id INT,
+    FOREIGN KEY (inventory_id) REFERENCES inventories(id)
+);
+
+CREATE TABLE clients (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    address VARCHAR(255),
+    city VARCHAR(100),
+    zip_code VARCHAR(20),
+    province VARCHAR(100),
+    country VARCHAR(100),
+    contact_name VARCHAR(255),
+    contact_phone VARCHAR(50),
+    contact_email VARCHAR(255),
+    created_at DATETIME,
+    updated_at DATETIME
+);
